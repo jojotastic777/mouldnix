@@ -1,59 +1,45 @@
 function(c, a){ // b: [bytecode]]
 
+
     //bytecode is memory
-
+    var m=a.b
+    
     //loc is the instruction in memory to run
-    a.b=[a.b.length].concat(a.b)
-
+    //    m=[m.length,[],{}].concat(m)
+    //load [] from lib
+    //load {} from lib
+    //load true from lib
+    //load false from lib
+    m=[3,1,0].concat(m)
+    
     //stack is how you cache data on the machine and how computatoin is done
     s=[]
 
-    //push to stack
-    function p(x){
+    var p=x=>s.push(x)
 
-	s.push(x)
+    var t=()=>s.pop()
+    
+    while(m[1]){
 	
-    }
-
-
-    //pop from stack
-    function t(){
-
-	return s.pop()
-
-    }
-
-    while(1){
-
-	//finite state machine based on the current op code
-
-	switch(a.b[0]){
+	switch(m[0]){
 	    
 	case 0:
-
-	    //cease the machine by returning the head of the stack
-
-	    return t()
 	    
+	    //set memory
+	    
+	    m[t()]=t()
+
 	    break
 
 	case 1:
 
-	    //set memory
+	    //get memory
 
-	    a.b[t()]=t()
+	    p(m[t()])
 
 	    break
 
 	case 2:
-
-	    //get memory
-
-	    p(a.b[t()])
-
-	    break
-
-	case 3:
 	    
 	    //case to run a function that is on the top of the stack with arguments of the
 	    //javascript list behind it
@@ -62,15 +48,15 @@ function(c, a){ // b: [bytecode]]
 
 	    break
 
-	case 4:
+	case 3:
 	    
 	    //get the index of an array or the key of an object at pop
 
-	    p(pop[t()])
+	    p(t[t()])
 
 	    break
 
-	case 5:
+	case 4:
 	    
 	    //subtraction
 
@@ -78,7 +64,7 @@ function(c, a){ // b: [bytecode]]
 
 	    break
 
-	case 6:
+	case 5:
 
 	    //exactly equals
 
@@ -86,27 +72,17 @@ function(c, a){ // b: [bytecode]]
 
 	    break
 
-	case 7:
-
-	    //not
-
-	    //!0 produces true
-	    //!!0 produces false
-
-	    p(!t())
-
-	    break
-
-	case 8:
+	case 6:
 
 	    //less than
+	    //may want to replace with <=
 
 	    p(t() < t())
 
 	    break
 
 
-	case 9:
+	case 7:
 
 	    //logical if
 	    //if statements always deal with a jump
@@ -114,75 +90,65 @@ function(c, a){ // b: [bytecode]]
 	    //or else it will do the second jump
 	    //if saveop location saveop 0 jump saveop location saveop 0 jump
 
-	    if(t()){
+	    p()&&(m[0]+=5)
 
-		a.b[0] +=5
-
-	    }
 
 	    break
 
-	case 10:
-
-	    //push an array
-
-	    p([])
-
-	    break
-
-
-	case 11:
-
-	    //push empty object
-
-	    p({})
-
-	    break
-
-	case 12:
+	case 8:
 
 	    //set the index of an array or the key/value of an object on the stack
 
-	    var x = s.pop()
+	    var x = t()
 
-	    x[s.pop()]=s.pop()
+	    x[t()]=t()
 
 	    p(x)
 
 	    break
 
-	case 13:
+	case 9:
 
-	    //turn a string into an array of chars
+	    //turn a char into an int
 
-	    push(pop.split("").map(function(x){return x.charCodeAt(0)}))
-
-	    break
-
-	case 14:
-
-	    //turn of an array of chars into a string
-
-	    push(pop.map(function(x){return String.fromCharCode(x)}).join(""))
+	    p(t(charCodeAt()))
 
 	    break
 
-	case 15:
+	case 10:
+
+	    //turn an int into a char
+
+	    p(String.fromCharCode(t()))
+
+	    break
+
+	case 11:
 
 	    //return the length of memory
 
-	    push(a.b.length())
+	    p(m.length)
+
+	    break
+
+	case 12:
+
+	    p(#db.i(t()))
+
+	    break
+
+	case 13:
+
+	    p(#db.f(t()).first())
 
 	    break
 
 	}
 	
-	a.b[0]++
+	m[0]++
 
     }
 	
-
+    return m[2]
  
 }
-
-
