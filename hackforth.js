@@ -9,9 +9,6 @@ function(c,a){
 	console.log(x)
 	switch(x){
 
-
-
-
 	case "dup":
 
 	    var x = stack.pop()
@@ -42,7 +39,6 @@ function(c,a){
 	    stack.push(x)
 	    stack.push(y)
 	    break
-	    
 
 	case "-":
 	    stack.push(stack.pop() - stack.pop())
@@ -68,7 +64,6 @@ function(c,a){
 	    x=stack.pop()
 	    var y=stack.pop()
 	    stack.push(x || y)
-	    
 	    break
 
 	case "drop":
@@ -91,27 +86,18 @@ function(c,a){
 		stack.push(next_word)
 	    }
 	    else{
-
 		if(next_words.length === 0 && a.code.length === 0){
-
 		    //assume that tne next word is on the stack
-
 		}
-
 		else{
-
 		    stack.push(next_words.pop())
-
-
 		}
 	    }
-
 	    break
 
 	case "eval":
 	    machine("next-word")
 	    machine(stack.pop())
-
 	    break
 
 	case "{}":
@@ -124,19 +110,14 @@ function(c,a){
 	    
 
 	case "get-subobject":
-
 	    stack.push(stack.pop()[stack.pop()])
-
 	    break
 
 	case "set-subobject":
-
 	    stack.pop()[stack.pop()]=stack.pop()
-
 	    break
 
 	case "hard-copy":
-
 	    stack.push((function(obj) {
 		var copy
 		if (null == obj || "object" != typeof obj) return obj
@@ -153,26 +134,19 @@ function(c,a){
 	    break
 
 	case "run-function":
-
 	    stack.pop()()
-
 	    break
-
+	    
 	case "=":
-
 	    stack.push(stack.pop() === stack.pop())
 	    break
 
 	case "<":
-
 	    stack.push(stack.pop() < stack.pop())
 	    break
-
-	    //case "string":
-
-	    //    machine("next-word")
-
-	    //    break
+        //case "string":
+        //    machine("next-word")
+        //    break
 
 	case "until2":
 	    //goto2
@@ -189,112 +163,65 @@ function(c,a){
 	    else{
 		next_words.pop()
 	    }
-
 	    break
 
 	case "until":
-
-
 	    stack.push(true)
 	    next_words.push("until2")
-
-
-
 	    break
-	
 
 	case "if":
-
-
 	    //this instruction causes infinite recursion
 	    //machine("eval")
-
 	    // we do this instead
 	    machine("next-word")
-
 	    x=stack.pop()
-
 	    
 	    if(stack.pop()){
-
-		
 		if(dictionary[x]){
-
-
 		    next_words=next_words.concat(dictionary[x])
-
-
-
 		}
 	    }
-
-	    
 	    break
 
-
 	case ":":
-
 	    machine("next-word")
-
 	    var name = stack.pop()
-
 	    var definition=[]
-
 	    machine("next-word")
-
 	    machine("dup")
-
 	    while(stack.pop() !== ";"){
-
 		machine("dup")
-
 		if(parseInt(stack.pop())){
 		    stack.push(parseInt(stack.pop()))
 		}
-
 		definition.push(stack.pop())
-
 		machine("next-word")
-
 		machine("dup")
-
 	    }
-
 	    dictionary[name]=definition.reverse()
-
 	    stack.pop()
-
 	    break
 
 	case "hackmud-data":
-
 	    stack.push({c,a})
-
 	    break
 
 	case "return":
-
 	    return_value=stack.pop()
-
 	    break
 
 	case "concat":
-
 	    stack.push(stack.pop().concat(stack.pop()))
-
 	    break
 
 	case "space":
-
 	    stack.push(" ")
-
 	    break
 
 	case "next-letter":
-
 	    stack.push(a.code.slice(0,1))
 	    a.code=a.code.slice(1,a.code.length)
-
 	    break
 
 	case "save":
@@ -302,32 +229,17 @@ function(c,a){
 	    break
 
 	default:
-
 	    if(dictionary[x]){
-
 		next_words=next_words.concat(dictionary[x])
-
-
-
 	    }
 //cant parseInt here because it may be a string
 	    else{
-
-		stack.push(x)
-		    
+		stack.push(x)    
 	    }
-
-
-
-
 	    break
-
-
 	}
-
-
     }
-
+    
     counter=0
 
     while(!(a.code.length == 0 && next_words.length == 0) && !return_value && counter !== -1){
@@ -337,10 +249,5 @@ function(c,a){
     }
     console.log("stack")
     console.log(stack)
-
-
     return return_value
-
-
-
 }
